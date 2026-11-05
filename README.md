@@ -6,6 +6,10 @@ dApp de votação dos projetos finais com o token **Turing**, rodando na blockch
 - Frontend (React): [`frontend/`](frontend/)
 - Testes: [`test/Turing.js`](test/Turing.js)
 
+## ERRATA
+
+- Tive que fazer uma correção no repositório após a data de entrega. Estava enviando 100ETH para o superusuário roberta ao fazer o deploy, o que está errado.
+
 ## Requisitos
 
 - Node.js 18 ou 20
@@ -34,7 +38,7 @@ npx hardhat node
 npx hardhat --network localhost run scripts/deploy.js
 ```
 
-O deploy grava o endereço e a ABI do contrato em `frontend/src/contracts/` e envia 100 ETH (para pagar o gas) para a conta da professora.
+O deploy grava o endereço e a ABI do contrato em `frontend/src/contracts/`.
 
 **4. Terminal 3: iniciar o frontend**
 
@@ -70,7 +74,7 @@ Acesse http://localhost:3000 e clique em **Connect Wallet**.
 | Aluno | nome4 | `0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65` | `0x47e179ec197488593b187f80a00eb0da91f1b9d0b13f8733639f19c30a34926a` |
 | Aluno | nome5 | `0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc` | `0x8b3a350cf5c34c9194ca85829a2df0ec3153be0318b5e2d3348e872092edffba` |
 
-**Conta da professora:** o codinome `roberta` (`0x5025…3Df7`) também é superusuário e pode votar. Ela recebe ETH automaticamente no deploy. Para mandar ETH a qualquer outro endereço:
+O codinome `roberta` (`0x5025…3Df7`) também é superusuário e pode votar. Para mandar ETH a qualquer outro endereço:
 
 ```bash
 npx hardhat --network localhost faucet <endereco> --amount 10

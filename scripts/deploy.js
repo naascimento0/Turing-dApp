@@ -1,52 +1,55 @@
-// Faz o deploy do contrato Turing e salva ABI + endereço no frontend.
-// Uso: npx hardhat --network localhost run scripts/deploy.js
-const path = require("path");
-const fs = require("fs");
+// This is a script for deploying your contracts. You can adapt it to deploy
+// yours, or create new ones.
 
-// Endereço da professora (não é uma conta padrão do Hardhat, então não tem ETH)
-const PROFESSORA = "0x502542668aF09fa7aea52174b9965A7799343Df7";
+const path = require("path");
 
 async function main() {
+  // This is just a convenience check
   if (network.name === "hardhat") {
     console.warn(
-      "Você está fazendo deploy na Hardhat Network temporária. " +
-        "Use a opção '--network localhost'."
+      "You are trying to deploy a contract to the Hardhat Network, which" +
+        "gets automatically created and destroyed every time. Use the Hardhat" +
+        " option '--network localhost'"
     );
   }
 
+  // ethers is available in the global scope
   const [deployer] = await ethers.getSigners();
-  console.log("Deploy com a conta (owner):", deployer.address);
+  console.log(
+    "Deploying the contracts with the account:",
+    await deployer.getAddress()
+  );
 
-  const Turing = await ethers.getContractFactory("Turing");
-  const turing = await Turing.deploy();
-  await turing.deployed();
-  console.log("Turing address:", turing.address);
+  console.log("Account balance:", (await deployer.getBalance()).toString());
 
-  // Envia ETH para a professora poder pagar o gas das transações
-  const tx = await deployer.sendTransaction({
-    to: PROFESSORA,
-    value: ethers.utils.parseEther("100"),
-  });
-  await tx.wait();
-  console.log("100 ETH enviados para a professora:", PROFESSORA);
+  const Token = await ethers.getContractFactory("Turing");
+  const token = await Token.deploy();
+  await token.deployed();
 
-  saveFrontendFiles(turing);
+  console.log("Token address:", token.address);
+
+  // We also save the contract's artifacts and address in the frontend directory
+  saveFrontendFiles(token);
 }
 
-function saveFrontendFiles(turing) {
+function saveFrontendFiles(token) {
+  const fs = require("fs");
   const contractsDir = path.join(__dirname, "..", "frontend", "src", "contracts");
+
   if (!fs.existsSync(contractsDir)) {
-    fs.mkdirSync(contractsDir, { recursive: true });
+    fs.mkdirSync(contractsDir);
   }
 
   fs.writeFileSync(
     path.join(contractsDir, "contract-address.json"),
-    JSON.stringify({ Turing: turing.address }, undefined, 2)
+    JSON.stringify({ Turing: token.address }, undefined, 2)
   );
+
+  const TokenArtifact = artifacts.readArtifactSync("Turing");
 
   fs.writeFileSync(
     path.join(contractsDir, "Turing.json"),
-    JSON.stringify(artifacts.readArtifactSync("Turing"), null, 2)
+    JSON.stringify(TokenArtifact, null, 2)
   );
 }
 
